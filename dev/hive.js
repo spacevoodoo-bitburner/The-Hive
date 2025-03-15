@@ -144,7 +144,6 @@ export async function main(ns) {
       for (let i = 0; i < finished.length; ++i){
         weakenports.splice(finished[i], 1);
       }
-      port = 1;
       await ns.sleep(200);
     }
   }
