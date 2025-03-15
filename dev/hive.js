@@ -38,114 +38,113 @@ export async function main(ns) {
     if (probstring != "NULL PORT DATA"){
       probs = JSON.parse(probstring);
     }
-    while (typeof probs == 'undefined'){
+    if (typeof probs !== 'undefined'){
+      //if there is enough room for more workers, the hive is allowed to make more workers.  Otherwise wait.
+      if (usedram < freeram - scriptram * 2){
+      //generate a random number and check against probs to see which hack function will be performed
+        let rand = Math.random();
+        let prob1 = probs[0]["probability"];
+        let prob2 = probs[0]["probability"] + probs[1]["probability"];
+        if (rand <= prob1){
+          //if it's hack, generate a random number, loop through all servers and
+          //execute hack if it's hackwaggle is greater than that number.
+          //it will be the same if probs tells us to grow or weaken, but for their waggles
+          let servercheck = Math.random() * maxhack;
+          for (let i = 0; i < targets.length; ++i){
+            if (targets[i]["hackwaggle"] >= servercheck){
+              let obj = {};
+              obj["server"] = targets[i]["name"];
+              obj["port"] = port;
+              hackports.push(obj);
+              ns.exec("/dev/worker.js", host, 1, "hack", targets[i]["name"], port);
+              port += 1;
+              usedram += scriptram;
+            }
+          }
+        } else if (rand > prob1 && rand <= prob2){
+          let servercheck = Math.random() * maxgrow;
+          for (let i = 0; i < targets.length; ++i){
+            if (targets[i]["growwaggle"] >= servercheck){
+              let obj = {};
+              obj["server"] = targets[i]["name"];
+              obj["port"] = port;
+              growports.push(obj);
+              ns.exec("/dev/worker.js", host, 1, "grow", targets[i]["name"], port);
+              port += 1;
+              usedram += scriptram;
+            }
+          }
+        } else {
+          let servercheck = Math.random() * maxweaken;
+          for (let i = 0; i < targets.length; ++i){
+            if (targets[i]["weakenwaggle"] >= servercheck){
+              let obj = {};
+              obj["server"] = targets[i]["name"];
+              obj["port"] = port;
+              weakenports.push(obj);
+              ns.exec("/dev/worker.js", host, 1, "weaken", targets[i]["name"], port);
+              port += 1;
+              usedram += scriptram;
+            }
+          }
+        }
+      }
+      //wait 0.2 seconds, check updated ports, update waggles, update used ram, and repeat loop
       await ns.sleep(200);
-    }
-    //if there is enough room for more workers, the hive is allowed to make more workers.  Otherwise wait.
-    if (usedram < freeram - scriptram * 2){
-    //generate a random number and check against probs to see which hack function will be performed
-      let rand = Math.random();
-      let prob1 = probs[0]["probability"];
-      let prob2 = probs[0]["probability"] + probs[1]["probability"];
-      if (rand <= prob1){
-        //if it's hack, generate a random number, loop through all servers and
-        //execute hack if it's hackwaggle is greater than that number.
-        //it will be the same if probs tells us to grow or weaken, but for their waggles
-        let servercheck = Math.random() * maxhack;
-        for (let i = 0; i < targets.length; ++i){
-          if (targets[i]["hackwaggle"] >= servercheck){
-            let obj = {};
-            obj["server"] = targets[i]["name"];
-            obj["port"] = port;
-            hackports.push(obj);
-            ns.exec("/dev/worker.js", host, 1, "hack", targets[i]["name"], port);
-            port += 1;
-            usedram += scriptram;
-          }
-        }
-      } else if (rand > prob1 && rand <= prob2){
-        let servercheck = Math.random() * maxgrow;
-        for (let i = 0; i < targets.length; ++i){
-          if (targets[i]["growwaggle"] >= servercheck){
-            let obj = {};
-            obj["server"] = targets[i]["name"];
-            obj["port"] = port;
-            growports.push(obj);
-            ns.exec("/dev/worker.js", host, 1, "grow", targets[i]["name"], port);
-            port += 1;
-            usedram += scriptram;
-          }
-        }
-      } else {
-        let servercheck = Math.random() * maxweaken;
-        for (let i = 0; i < targets.length; ++i){
-          if (targets[i]["weakenwaggle"] >= servercheck){
-            let obj = {};
-            obj["server"] = targets[i]["name"];
-            obj["port"] = port;
-            weakenports.push(obj);
-            ns.exec("/dev/worker.js", host, 1, "weaken", targets[i]["name"], port);
-            port += 1;
-            usedram += scriptram;
-          }
-        }
-      }
-    }
-    //wait 0.2 seconds, check updated ports, update waggles, update used ram, and repeat loop
-    await ns.sleep(200);
-    if (hackports.length > 4){
-      let finished = [];
-      for (let i = 0; i < hackports.length; ++i){
-        let thiswaggle = ns.readPort(hackports[i]["port"]);
-        if (thiswaggle != "NULL PORT DATA"){
-          for (let j = 0; j < targets.length; ++j){
-            if (targets[j]["name"] == hackports[i]["server"]){
-              let lastwaggle = targets[j]["hackwaggle"];
-              targets[j]["hackwaggle"] = (thiswaggle + lastwaggle) / 2;
-              usedram -= scriptram;
-              finished.push(i);
+      if (hackports.length > 4){
+        let finished = [];
+        for (let i = 0; i < hackports.length; ++i){
+          let thiswaggle = ns.readPort(hackports[i]["port"]);
+          if (thiswaggle != "NULL PORT DATA"){
+            for (let j = 0; j < targets.length; ++j){
+              if (targets[j]["name"] == hackports[i]["server"]){
+                let lastwaggle = targets[j]["hackwaggle"];
+                targets[j]["hackwaggle"] = (thiswaggle + lastwaggle) / 2;
+                usedram -= scriptram;
+                finished.push(i);
+              }
             }
           }
         }
-      }
-      //remove used ports from array after loop to avoid index errors
-      for (let i = 0; i < finished.length; ++i){
-        hackports.splice(finished[i], 1);
-      }
-      finished = [];
-      for (let i = 0; i < growports.length; ++i){
-        let thiswaggle = ns.readPort(growports[i]["port"]);
-        if (thiswaggle != "NULL PORT DATA"){
-          for (let j = 0; j < targets.length; ++j){
-            if (targets[j]["name"] == growports[i]["server"]){
-              let lastwaggle = targets[j]["hackwaggle"];
-              targets[j]["growwaggle"] = (thiswaggle + lastwaggle) / 2;
-              usedram -= scriptram;
-              finished.push(i)
-              await ns.sleep(200);
+        //remove used ports from array after loop to avoid index errors
+        for (let i = 0; i < finished.length; ++i){
+          hackports.splice(finished[i], 1);
+        }
+        finished = [];
+        for (let i = 0; i < growports.length; ++i){
+          let thiswaggle = ns.readPort(growports[i]["port"]);
+          if (thiswaggle != "NULL PORT DATA"){
+            for (let j = 0; j < targets.length; ++j){
+              if (targets[j]["name"] == growports[i]["server"]){
+                let lastwaggle = targets[j]["hackwaggle"];
+                targets[j]["growwaggle"] = (thiswaggle + lastwaggle) / 2;
+                usedram -= scriptram;
+                finished.push(i)
+                await ns.sleep(200);
+              }
             }
           }
         }
-      }
-      for (let i = 0; i < finished.length; ++i){
-        growports.splice(finished[i], 1);
-      }
-      finished = [];
-      for (let i = 0; i < weakenports.length; ++i){
-        let thiswaggle = ns.readPort(weakenports[i]["port"]);
-        if (thiswaggle != "NULL PORT DATA"){
-          for (let j = 0; j < targets.length; ++j){
-            if (targets[j]["name"] == weakenports[i]["server"]){
-              let lastwaggle = targets[j]["hackwaggle"];
-              targets[j]["weakenwaggle"] = (thiswaggle + lastwaggle) / 2;
-              usedram -= scriptram;
-              finished.push(i);
+        for (let i = 0; i < finished.length; ++i){
+          growports.splice(finished[i], 1);
+        }
+        finished = [];
+        for (let i = 0; i < weakenports.length; ++i){
+          let thiswaggle = ns.readPort(weakenports[i]["port"]);
+          if (thiswaggle != "NULL PORT DATA"){
+            for (let j = 0; j < targets.length; ++j){
+              if (targets[j]["name"] == weakenports[i]["server"]){
+                let lastwaggle = targets[j]["hackwaggle"];
+                targets[j]["weakenwaggle"] = (thiswaggle + lastwaggle) / 2;
+                usedram -= scriptram;
+                finished.push(i);
+              }
             }
           }
         }
-      }
-      for (let i = 0; i < finished.length; ++i){
-        weakenports.splice(finished[i], 1);
+        for (let i = 0; i < finished.length; ++i){
+          weakenports.splice(finished[i], 1);
+        }
       }
       await ns.sleep(200);
     }
