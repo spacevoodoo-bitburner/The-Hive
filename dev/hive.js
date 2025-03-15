@@ -38,6 +38,9 @@ export async function main(ns) {
     if (probstring != "NULL PORT DATA"){
       probs = JSON.parse(probstring);
     }
+    if (typeof probs == 'undefined'){
+      await ns.sleep(200);
+    }
     //if there is enough room for more workers, the hive is allowed to make more workers.  Otherwise wait.
     if (usedram < freeram - scriptram * 2){
     //generate a random number and check against probs to see which hack function will be performed
