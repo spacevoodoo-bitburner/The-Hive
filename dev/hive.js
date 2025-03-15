@@ -105,6 +105,7 @@ export async function main(ns) {
           }
         }
       }
+      await ns.sleep(200);
       //remove used ports from array after loop to avoid index errors
       for (let i = 0; i < finished.length; ++i){
         hackports.splice(finished[i], 1);
@@ -123,6 +124,7 @@ export async function main(ns) {
           }
         }
       }
+      await ns.sleep(200);
       for (let i = 0; i < finished.length; ++i){
         growports.splice(finished[i], 1);
       }
