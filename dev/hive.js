@@ -149,7 +149,6 @@ export async function main(ns) {
       }
       port = 1;
     }
-    await ns.sleep(500);
   }
 }
 
