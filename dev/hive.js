@@ -19,8 +19,8 @@ export async function main(ns) {
     }
   }
   //figure out how much room you have for workers and initialize starting values
-  let freeram = ns.getServerMaxRam("home") - ns.getServerUsedRam("home");
-  let baseusedram = ns.getServerUsedRam("home");
+  let freeram = ns.getServerMaxRam(host) - ns.getServerUsedRam(host);
+  let baseusedram = ns.getServerUsedRam(host);
   let scriptram = ns.getScriptRam("/dev/worker.js", host);
   let usedram = 0;
   let port = 1;
@@ -34,7 +34,7 @@ export async function main(ns) {
   while (true){
     //every loop check port 1000 for a new queen.  If one is found update probs.
     probstring = ns.readPort(1000);
-    freeram = ns.getServerMaxRam("home") - baseusedram;
+    freeram = ns.getServerMaxRam(host) - baseusedram;
     if (probstring != "NULL PORT DATA"){
       probs = JSON.parse(probstring);
     }
@@ -91,44 +91,57 @@ export async function main(ns) {
     //wait 0.2 seconds, check updated ports, update waggles, update used ram, and repeat loop
     await ns.sleep(200);
     if (hackports.length > 4){
+      let finished = [];
       for (let i = 0; i < hackports.length; ++i){
         let thiswaggle = ns.readPort(hackports[i]["port"]);
-        if (thiswaggle == "NULL PORT DATA"){
-          thiswaggle = 1;
-        }
-        for (let j = 0; j < targets.length; ++j){
-          if (targets[j]["name"] == hackports[i]["server"]){
-            let lastwaggle = targets[j]["hackwaggle"];
-            targets[j]["hackwaggle"] = (thiswaggle + lastwaggle) / 2;
-            usedram -= scriptram;
+        if (thiswaggle != "NULL PORT DATA"){
+          for (let j = 0; j < targets.length; ++j){
+            if (targets[j]["name"] == hackports[i]["server"]){
+              let lastwaggle = targets[j]["hackwaggle"];
+              targets[j]["hackwaggle"] = (thiswaggle + lastwaggle) / 2;
+              usedram -= scriptram;
+              finished.push(i);
+            } 
           }
         }
       }
+      //remove used ports from array after loop to avoid index errors
+      for (let i = 0; i < finished.length; ++i){
+        hackports.splice(finished[i], 1);
+      }
+      finished = [];
       for (let i = 0; i < growports.length; ++i){
         let thiswaggle = ns.readPort(growports[i]["port"]);
-        if (thiswaggle == "NULL PORT DATA"){
-          thiswaggle = 1;
-        }
-        for (let j = 0; j < targets.length; ++j){
-          if (targets[j]["name"] == growports[i]["server"]){
-            let lastwaggle = targets[j]["hackwaggle"];
-            targets[j]["growwaggle"] = (thiswaggle + lastwaggle) / 2;
-            usedram -= scriptram;
+        if (thiswaggle != "NULL PORT DATA"){
+          for (let j = 0; j < targets.length; ++j){
+            if (targets[j]["name"] == growports[i]["server"]){
+              let lastwaggle = targets[j]["hackwaggle"];
+              targets[j]["growwaggle"] = (thiswaggle + lastwaggle) / 2;
+              usedram -= scriptram;
+              finished.push(i)
+            }
           }
         }
       }
+      for (let i = 0; i < finished.length; ++i){
+        growports.splice(finished[i], 1);
+      }
+      finished = [];
       for (let i = 0; i < weakenports.length; ++i){
         let thiswaggle = ns.readPort(weakenports[i]["port"]);
-        if (thiswaggle == "NULL PORT DATA"){
-          thiswaggle = 0.1;
-        }
-        for (let j = 0; j < targets.length; ++j){
-          if (targets[j]["name"] == weakenports[i]["server"]){
-            let lastwaggle = targets[j]["hackwaggle"];
-            targets[j]["weakenwaggle"] = (thiswaggle + lastwaggle) / 2;
-            usedram -= scriptram;
+        if (thiswaggle != "NULL PORT DATA"){
+          for (let j = 0; j < targets.length; ++j){
+            if (targets[j]["name"] == weakenports[i]["server"]){
+              let lastwaggle = targets[j]["hackwaggle"];
+              targets[j]["weakenwaggle"] = (thiswaggle + lastwaggle) / 2;
+              usedram -= scriptram;
+              finished.push(i);
+            }
           }
         }
+      }
+      for (let i = 0; i < finished.length; ++i){
+        weakenports.splice(finished[i], 1);
       }
       port = 1;
     }
