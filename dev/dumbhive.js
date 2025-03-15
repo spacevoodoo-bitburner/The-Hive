@@ -48,8 +48,8 @@ export async function main(ns) {
           if (callback != "NULL PORT DATA"){
             usedram -= scriptram;
             ports.splice(i, 1);
+            await ns.sleep(200);
           }
-          await ns.sleep(200);
         }
       }
       await ns.sleep(500);
