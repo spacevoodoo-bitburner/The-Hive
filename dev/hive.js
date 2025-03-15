@@ -38,7 +38,7 @@ export async function main(ns) {
     if (probstring != "NULL PORT DATA"){
       probs = JSON.parse(probstring);
     }
-    if (typeof probs == 'undefined'){
+    while (typeof probs == 'undefined'){
       await ns.sleep(200);
     }
     //if there is enough room for more workers, the hive is allowed to make more workers.  Otherwise wait.
