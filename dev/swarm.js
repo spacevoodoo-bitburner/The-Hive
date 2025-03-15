@@ -51,8 +51,20 @@ export async function main(ns) {
     ns.exec("/dev/queen.js", purchasedservers[i], 1, 1000, x, y, z);
     ns.exec("/dev/hive.js", purchasedservers[i]);
   }
-  //execute dumbhive on home so it doesn't bias queen parameters
-  ns.exec("/dev/dumbhive.js", "home");
+  if (purchasedservers.length < 25){
+    //after a fresh reset use main server as a normal hive since you don't have better options
+    let queen = queenbee(ns);
+    queen = JSON.parse(queen);
+    let x = queen[0]["variable"];
+    let y = queen[1]["variable"];
+    let z = queen[2]["variable"];
+    queenmatrix.push(queen);
+    ns.exec("/dev/queen.js", "home", 1, 1000, x, y, z);
+    ns.exec("/dev/hive.js", "home");
+  } else {
+    //execute dumbhive on home so it doesn't bias queen parameters if other hives are up
+    ns.exec("/dev/dumbhive.js", "home");
+  }
   
   //sleep until enough workers have had a chance to execute to get a 
   //starting assessement of hive health
