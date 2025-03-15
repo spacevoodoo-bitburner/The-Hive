@@ -50,7 +50,7 @@ export async function main(ns) {
         //it will be the same if probs tells us to grow or weaken, but for their waggles
         let servercheck = Math.random() * maxhack;
         for (let i = 0; i < targets.length; ++i){
-          if (targets[i]["hackwaggle"] > servercheck){
+          if (targets[i]["hackwaggle"] >= servercheck){
             let obj = {};
             obj["server"] = targets[i]["name"];
             obj["port"] = port;
@@ -63,7 +63,7 @@ export async function main(ns) {
       } else if (rand > prob1 && rand <= prob2){
         let servercheck = Math.random() * maxgrow;
         for (let i = 0; i < targets.length; ++i){
-          if (targets[i]["growwaggle"] > servercheck){
+          if (targets[i]["growwaggle"] >= servercheck){
             let obj = {};
             obj["server"] = targets[i]["name"];
             obj["port"] = port;
@@ -76,7 +76,7 @@ export async function main(ns) {
       } else {
         let servercheck = Math.random() * maxweaken;
         for (let i = 0; i < targets.length; ++i){
-          if (targets[i]["weakenwaggle"] > servercheck){
+          if (targets[i]["weakenwaggle"] >= servercheck){
             let obj = {};
             obj["server"] = targets[i]["name"];
             obj["port"] = port;
