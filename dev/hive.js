@@ -101,11 +101,11 @@ export async function main(ns) {
               targets[j]["hackwaggle"] = (thiswaggle + lastwaggle) / 2;
               usedram -= scriptram;
               finished.push(i);
-            } 
+              await ns.sleep(200);
+            }
           }
         }
       }
-      await ns.sleep(200);
       //remove used ports from array after loop to avoid index errors
       for (let i = 0; i < finished.length; ++i){
         hackports.splice(finished[i], 1);
@@ -120,6 +120,7 @@ export async function main(ns) {
               targets[j]["growwaggle"] = (thiswaggle + lastwaggle) / 2;
               usedram -= scriptram;
               finished.push(i)
+              await ns.sleep(200);
             }
           }
         }
@@ -138,6 +139,7 @@ export async function main(ns) {
               targets[j]["weakenwaggle"] = (thiswaggle + lastwaggle) / 2;
               usedram -= scriptram;
               finished.push(i);
+              await ns.sleep(200);
             }
           }
         }
