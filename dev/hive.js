@@ -145,7 +145,7 @@ export async function main(ns) {
         }
       }
     }
-    await ns.sleep(200);
+    await ns.sleep(50);
   }
 }
 
