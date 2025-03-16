@@ -116,11 +116,10 @@ export async function main(ns) {
           if (thiswaggle != "NULL PORT DATA"){
             for (let j = 0; j < targets.length; ++j){
               if (targets[j]["name"] == growports[i]["server"]){
-                let lastwaggle = targets[j]["hackwaggle"];
+                let lastwaggle = targets[j]["weakenwaggle"];
                 targets[j]["growwaggle"] = (thiswaggle + lastwaggle) / 2;
                 usedram -= scriptram;
                 finished.push(i)
-                await ns.sleep(200);
               }
             }
           }
@@ -134,7 +133,7 @@ export async function main(ns) {
           if (thiswaggle != "NULL PORT DATA"){
             for (let j = 0; j < targets.length; ++j){
               if (targets[j]["name"] == weakenports[i]["server"]){
-                let lastwaggle = targets[j]["hackwaggle"];
+                let lastwaggle = targets[j]["growwaggle"];
                 targets[j]["weakenwaggle"] = (thiswaggle + lastwaggle) / 2;
                 usedram -= scriptram;
                 finished.push(i);
