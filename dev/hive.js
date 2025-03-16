@@ -14,7 +14,7 @@ export async function main(ns) {
     let serv = servers[i]["name"];
     if (serv.includes("pserv")){
       purchasedservers.push(servers[i]);
-    } else {
+    } else if (serv == "home"){} else {
       targets.push(servers[i]);
     }
   }
