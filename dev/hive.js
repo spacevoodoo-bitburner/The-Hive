@@ -89,8 +89,7 @@ export async function main(ns) {
           }
         }
       }
-      //wait 0.2 seconds, check updated ports, update waggles, update used ram, and repeat loop
-      await ns.sleep(200);
+      //check updated ports, update waggles, update used ram, and repeat loop
       if (hackports.length > 4){
         let finished = [];
         for (let i = 0; i < hackports.length; ++i){
