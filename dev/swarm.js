@@ -65,7 +65,7 @@ export async function main(ns) {
   
   //sleep until enough workers have had a chance to execute to get a 
   //starting assessement of hive health
-  await ns.sleep(longesttime);
+  //await ns.sleep(longesttime);
   while (true){
     //perform differential evolution loop every 60 seconds
     await ns.sleep(60000);
