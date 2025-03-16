@@ -98,25 +98,23 @@ export async function main(ns) {
     let cr = 0.2;
     for (let i = 0; i < queenmatrix.length; ++i){
       //for every hive, if it isn't one of our best queens, replace the queen
-      if (!serverarray.includes(queenmatrix[i][3]["server"])){
-        //get two random successful queens
-        let idx1 = getRandomInt(0, 9);
-        let idx2 = getRandomInt(0, 9);
-        let parent1 = bestqueens[idx1];
-        let parent2 = bestqueens[idx2];
-        //give them a chance to cross over
-        if (typeof parent1 !== 'undefined' && typeof parent2 !== 'undefined'){
-          crossover(parent1, parent2, cr);
-          //give them a chance to mutate
-          mutate(parent1, mr);
-          mutate(parent2, mr);
-          //pick one of the (maybe) altered parent copies and replace the unsuccessful queen with it
-          let chance = Math.random();
-          if (chance > 0.5){
-            queenmatrix[i] = parent1;
-          } else {
-            queenmatrix[i] = parent2;
-          }
+      //get two random successful queens
+      let idx1 = getRandomInt(0, 9);
+      let idx2 = getRandomInt(0, 9);
+      let parent1 = bestqueens[idx1];
+      let parent2 = bestqueens[idx2];
+      //give them a chance to cross over
+      if (typeof parent1 !== 'undefined' && typeof parent2 !== 'undefined'){
+        crossover(parent1, parent2, cr);
+        //give them a chance to mutate
+        mutate(parent1, mr);
+        mutate(parent2, mr);
+        //pick one of the (maybe) altered parent copies and replace the unsuccessful queen with it
+        let chance = Math.random();
+        if (chance > 0.5){
+          queenmatrix[i] = parent1;
+        } else {
+          queenmatrix[i] = parent2;
         }
       }
     }
