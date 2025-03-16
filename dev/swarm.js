@@ -2,6 +2,7 @@ import { scanall } from "/dev/scanner.js";
 import { queenbee } from "/dev/queen.js";
 
 export async function main(ns) {
+  let starttime = Date.now();
   //get all target servers. These will be hives too but mostly function as flowers.
   const servers = await scanall(ns);
   //get purchased servers.  These will be our workhorse hives with the biggest populations.
@@ -64,13 +65,17 @@ export async function main(ns) {
     //for every hive, grab it's script income and save it to an array
     for (let i = 0; i < servers.length; ++i){
       if (ns.getServerMaxRam(servers[i]["name"]) > 8){
-        let success = ns.getScriptIncome("/dev/hive.js", servers[i]["name"])/60;
+        let curtime = Date.now();
+        let diff = curtime - starttime;
+        let success = ns.getScriptIncome("/dev/hive.js", servers[i]["name"])/diff;
         successarray.push(success);
         serverarray.push(servers[i]["name"])
       }
     }
     for (let i = 0; i < purchasedservers.length; ++i){
-      let success = ns.getScriptIncome("/dev/hive.js", purchasedservers[i]["name"]);
+      let curtime = Date.now();
+      let diff = curtime - starttime;
+      let success = ns.getScriptIncome("/dev/hive.js", servers[i]["name"])/diff;
       successarray.push(success);
       serverarray.push(purchasedservers[i]);
     }
