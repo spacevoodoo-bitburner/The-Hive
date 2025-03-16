@@ -51,14 +51,16 @@ export async function main(ns) {
     ns.exec("/dev/queen.js", purchasedservers[i], 1, 1000, x, y, z);
     ns.exec("/dev/hive.js", purchasedservers[i]);
   }
-  let queen = queenbee(ns);
-  queen = JSON.parse(queen);
-  let x = queen[0]["variable"];
-  let y = queen[1]["variable"];
-  let z = queen[2]["variable"];
-  queenmatrix.push(queen);
-  ns.exec("/dev/queen.js", "home", 1, 1000, x, y, z);
-  ns.exec("/dev/hive.js", "home");
+  if (!ns.fileExists("SQLInject.exe", "home")) {
+    let queen = queenbee(ns);
+    queen = JSON.parse(queen);
+    let x = queen[0]["variable"];
+    let y = queen[1]["variable"];
+    let z = queen[2]["variable"];
+    queenmatrix.push(queen);
+    ns.exec("/dev/queen.js", "home", 1, 1000, x, y, z);
+    ns.exec("/dev/hive.js", "home");
+  }
 
   
   //sleep until enough workers have had a chance to execute to get a 
