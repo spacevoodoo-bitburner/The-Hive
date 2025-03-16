@@ -8,33 +8,26 @@ export async function main(ns) {
   const purchasedservers = ns.getPurchasedServers();
 
   //create an array to hold copies of the queen in every hive
-  const queenmatrix = [];
+  let queenmatrix = [];
 
   let longesttime = 0;
   for (let i = 0; i < servers.length; ++i){
-    //figure out how long you need to wait before updating queens for the first time
-    let growtime = ns.getGrowTime(servers[i]["name"]);
-    let weakentime = ns.getWeakenTime(servers[i]["name"]);
-    if (growtime > longesttime){
-      longesttime = growtime;
+    if (ns.getServerMaxRam(servers[i]["name"]) > 8){
+      //randomly initialize a queen and extract it's json
+      let queen = queenbee(ns);
+      queen = JSON.parse(queen);
+      let x = queen[0]["variable"];
+      let y = queen[1]["variable"];
+      let z = queen[2]["variable"];
+      //push the queen to the queen matrix and generate a hive and a queen with these parameters on the server
+      queenmatrix.push(queen);
+      ns.scp("/dev/hive.js", servers[i]["name"]);
+      ns.scp("/dev/worker.js", servers[i]["name"]);
+      ns.scp("/dev/scanner.js", servers[i]["name"]);
+      ns.scp("/dev/queen.js", servers[i]["name"]);
+      ns.exec("/dev/queen.js", servers[i]["name"], 1, 1000, x, y, z);
+      ns.exec("/dev/hive.js", servers[i]["name"]);
     }
-    if (weakentime > longesttime){
-      longesttime = weakentime;
-    }
-    //randomly initialize a queen and extract it's json
-    let queen = queenbee(ns);
-    queen = JSON.parse(queen);
-    let x = queen[0]["variable"];
-    let y = queen[1]["variable"];
-    let z = queen[2]["variable"];
-    //push the queen to the queen matrix and generate a hive and a queen with these parameters on the server
-    queenmatrix.push(queen);
-    ns.scp("/dev/hive.js", servers[i]["name"]);
-    ns.scp("/dev/worker.js", servers[i]["name"]);
-    ns.scp("/dev/scanner.js", servers[i]["name"]);
-    ns.scp("/dev/queen.js", servers[i]["name"]);
-    ns.exec("/dev/queen.js", servers[i]["name"], 1, 1000, x, y, z);
-    ns.exec("/dev/hive.js", servers[i]["name"]);
   }
   //same as for servers
   for (let i = 0; i < purchasedservers.length; ++i){
@@ -61,21 +54,20 @@ export async function main(ns) {
     ns.exec("/dev/queen.js", "home", 1, 1000, x, y, z);
     ns.exec("/dev/hive.js", "home");
   }
-
-  
+  let bestqueens = [];
   //sleep until enough workers have had a chance to execute to get a 
   //starting assessement of hive health
   //await ns.sleep(longesttime);
   while (true){
-    //perform differential evolution loop every 60 seconds
-    await ns.sleep(60000);
     let successarray = [];
     let serverarray = [];
     //for every hive, grab it's script income and save it to an array
     for (let i = 0; i < servers.length; ++i){
-      let success = ns.getScriptIncome("/dev/hive.js", servers[i]["name"]);
-      successarray.push(success);
-      serverarray.push(servers[i]["name"])
+      if (ns.getServerMaxRam(servers[i]["name"]) > 8){
+        let success = ns.getScriptIncome("/dev/hive.js", servers[i]["name"])/60;
+        successarray.push(success);
+        serverarray.push(servers[i]["name"])
+      }
     }
     for (let i = 0; i < purchasedservers.length; ++i){
       let success = ns.getScriptIncome("/dev/hive.js", purchasedservers[i]["name"]);
@@ -90,12 +82,12 @@ export async function main(ns) {
       successarray.splice(minindex, 1);
       serverarray.splice(minindex, 1);
     }
-    let bestqueens = []
     for (let i = 0; i < queenmatrix.length; ++i){
       if (serverarray.includes(queenmatrix[i][3]["server"])){
         bestqueens.push(queenmatrix[i]);
       }
     }
+    await ns.sleep(60000);
     //mutation rate = 0.1, crossover rate = 0.2
     let mr = 0.1;
     let cr = 0.2;
@@ -108,16 +100,18 @@ export async function main(ns) {
         let parent1 = bestqueens[idx1];
         let parent2 = bestqueens[idx2];
         //give them a chance to cross over
-        crossover(parent1, parent2, cr);
-        //give them a chance to mutate
-        mutate(parent1, mr);
-        mutate(parent2, mr);
-        //pick one of the (maybe) altered parent copies and replace the unsuccessful queen with it
-        let chance = Math.random();
-        if (chance > 0.5){
-          queenmatrix[i] = parent1;
-        } else {
-          queenmatrix[i] = parent2;
+        if (typeof parent1 !== 'undefined' && typeof parent2 !== 'undefined'){
+          crossover(parent1, parent2, cr);
+          //give them a chance to mutate
+          mutate(parent1, mr);
+          mutate(parent2, mr);
+          //pick one of the (maybe) altered parent copies and replace the unsuccessful queen with it
+          let chance = Math.random();
+          if (chance > 0.5){
+            queenmatrix[i] = parent1;
+          } else {
+            queenmatrix[i] = parent2;
+          }
         }
       }
     }
@@ -126,6 +120,7 @@ export async function main(ns) {
       ns.scriptKill("/dev/queen.js", queenmatrix[i][3]["server"]);
       ns.exec("/dev/queen.js", queenmatrix[i][3]["server"], 1, 1000, queenmatrix[i][0]["probability"], queenmatrix[i][1]["probability"], queenmatrix[i][2]["probability"]);
     }
+    bestqueens = [];
   }
 }
 
