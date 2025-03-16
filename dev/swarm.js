@@ -75,7 +75,7 @@ export async function main(ns) {
     for (let i = 0; i < purchasedservers.length; ++i){
       let curtime = Date.now();
       let diff = curtime - starttime;
-      let success = ns.getScriptIncome("/dev/hive.js", servers[i]["name"])/diff;
+      let success = ns.getScriptIncome("/dev/hive.js", purchasedservers[i])/diff;
       successarray.push(success);
       serverarray.push(purchasedservers[i]);
     }
@@ -89,7 +89,8 @@ export async function main(ns) {
     }
     for (let i = 0; i < queenmatrix.length; ++i){
       if (serverarray.includes(queenmatrix[i][3]["server"])){
-        bestqueens.push(queenmatrix[i]);
+        let q = queenmatrix[i];
+        bestqueens.push(q);
       }
     }
     await ns.sleep(60000);
@@ -98,6 +99,7 @@ export async function main(ns) {
     let cr = 0.2;
     for (let i = 0; i < queenmatrix.length; ++i){
       //for every hive, if it isn't one of our best queens, replace the queen
+
       //get two random successful queens
       let idx1 = getRandomInt(0, 9);
       let idx2 = getRandomInt(0, 9);
