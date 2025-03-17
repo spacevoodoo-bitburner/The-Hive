@@ -3,7 +3,11 @@ import { scanall } from "/dev/scanner.js";
 export async function main(ns) {
   //when a hive is initialized, read port 1000 for the queen data
   //swarm will always initialize queen before hive for this reason
-  let probstring = ns.readPort(1000);
+  let probstring = "NULL PORT DATA";
+  while (probstring === "NULL PORT DATA"){
+    probstring = ns.readPort(1000);
+    await ns.sleep(10);
+  }
   let probs = JSON.parse(probstring);
   //get hives and targets
   const servers = await scanall(ns);
