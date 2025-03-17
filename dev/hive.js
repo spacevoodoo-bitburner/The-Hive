@@ -112,7 +112,7 @@ export async function main(ns) {
               }
             }
           } else {
-            maxhack = maxhack*0.8;
+            maxhack = maxhack/2;
           }
         }
         //remove used ports from array after loop to avoid index errors
@@ -135,7 +135,7 @@ export async function main(ns) {
               }
             }
           } else {
-            maxgrow = maxgrow*0.8;
+            maxgrow = maxgrow/2;
           }
         }
         for (let i = 0; i < finished.length; ++i){
