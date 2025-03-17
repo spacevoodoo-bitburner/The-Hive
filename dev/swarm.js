@@ -26,6 +26,7 @@ export async function main(ns) {
       ns.scp("/dev/worker.js", servers[i]["name"]);
       ns.scp("/dev/scanner.js", servers[i]["name"]);
       ns.scp("/dev/queen.js", servers[i]["name"]);
+      ns.scp("/dev/restarthive.js", servers[i]["name"]);
       ns.exec("/dev/queen.js", servers[i]["name"], 1, 1000, x, y, z);
       ns.exec("/dev/hive.js", servers[i]["name"]);
     }
@@ -42,6 +43,7 @@ export async function main(ns) {
     ns.scp("/dev/worker.js", purchasedservers[i]);
     ns.scp("/dev/scanner.js", purchasedservers[i]);
     ns.scp("/dev/queen.js", purchasedservers[i]);
+    ns.scp("/dev/restarthive.js", servers[i]["name"]);
     ns.exec("/dev/queen.js", purchasedservers[i], 1, 1000, x, y, z);
     ns.exec("/dev/hive.js", purchasedservers[i]);
   }
