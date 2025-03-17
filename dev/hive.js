@@ -3,6 +3,7 @@ import { scanall } from "/dev/scanner.js";
 export async function main(ns) {
   //when a hive is initialized, read port 1000 for the queen data
   //swarm will always initialize queen before hive for this reason
+  
   let probstring = "NULL PORT DATA";
   while (probstring === "NULL PORT DATA"){
     probstring = ns.readPort(1000);
@@ -105,6 +106,9 @@ export async function main(ns) {
                 targets[j]["hackwaggle"] = (thiswaggle + lastwaggle) / 2;
                 usedram -= scriptram;
                 finished.push(i);
+                if (thiswaggle > maxhack){
+                  maxhack = thiswaggle;
+                }
               }
             }
           } else {
@@ -131,6 +135,9 @@ export async function main(ns) {
                 targets[j]["growwaggle"] = (thiswaggle + lastwaggle) / 2;
                 usedram -= scriptram;
                 finished.push(i)
+                if (thiswaggle > maxgrow){
+                  maxgrow = thiswaggle;
+                }
               }
             }
           } else {
@@ -156,6 +163,9 @@ export async function main(ns) {
                 targets[j]["weakenwaggle"] = (thiswaggle + lastwaggle) / 2;
                 usedram -= scriptram;
                 finished.push(i);
+                if (thiswaggle > maxweaken){
+                  maxweaken = thiswaggle;
+                }
               }
             }
           } else {
