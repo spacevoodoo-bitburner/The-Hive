@@ -35,7 +35,7 @@ export async function main(ns) {
   let weakenports = [];
   let maxhack = 1;
   let maxgrow = 1;
-  let maxweaken = 0.1;
+  let maxweaken = 1;
   while (true){
     //every loop check port 1000 for a new queen.  If one is found update probs.
     probstring = ns.readPort(1000);
@@ -61,7 +61,7 @@ export async function main(ns) {
               obj["server"] = targets[i]["name"];
               obj["port"] = port;
               hackports.push(obj);
-              ns.exec("/dev/worker.js", host, 2, "hack", targets[i]["name"], port);
+              ns.exec("/dev/worker.js", host, 8, "hack", targets[i]["name"], port);
               port += 1;
               usedram += scriptram;
             }
@@ -74,7 +74,7 @@ export async function main(ns) {
               obj["server"] = targets[i]["name"];
               obj["port"] = port;
               growports.push(obj);
-              ns.exec("/dev/worker.js", host, 2, "grow", targets[i]["name"], port);
+              ns.exec("/dev/worker.js", host, 8, "grow", targets[i]["name"], port);
               port += 1;
               usedram += scriptram;
             }
@@ -87,7 +87,7 @@ export async function main(ns) {
               obj["server"] = targets[i]["name"];
               obj["port"] = port;
               weakenports.push(obj);
-              ns.exec("/dev/worker.js", host, 2, "weaken", targets[i]["name"], port);
+              ns.exec("/dev/worker.js", host, 8, "weaken", targets[i]["name"], port);
               port += 1;
               usedram += scriptram;
             }
@@ -183,7 +183,7 @@ export async function main(ns) {
         }
       }
     }
-    await ns.sleep(50);
+    await ns.sleep(10);
   }
 }
 
