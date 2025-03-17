@@ -112,13 +112,7 @@ export async function main(ns) {
               }
             }
           } else {
-            thiswaggle = 1;
-            for (let j = 0; j < targets.length; ++j){
-              if (targets[j]["name"] == hackports[i]["server"]){
-                let lastwaggle = targets[j]["hackwaggle"];
-                targets[j]["hackwaggle"] = (thiswaggle + lastwaggle) / 2;
-              }
-            }
+            maxhack = maxhack*0.8;
           }
         }
         //remove used ports from array after loop to avoid index errors
@@ -141,13 +135,7 @@ export async function main(ns) {
               }
             }
           } else {
-            for (let j = 0; j < targets.length; ++j){
-              thiswaggle = 1;
-              if (targets[j]["name"] == growports[i]["server"]){
-                let lastwaggle = targets[j]["growwaggle"];
-                targets[j]["growwaggle"] = (thiswaggle + lastwaggle) / 2;
-              }
-            }
+            maxgrow = maxgrow*0.8;
           }
         }
         for (let i = 0; i < finished.length; ++i){
@@ -169,13 +157,7 @@ export async function main(ns) {
               }
             }
           } else {
-            for (let j = 0; j < targets.length; ++j){
-              thiswaggle = 0.1;
-              if (targets[j]["name"] == weakenports[i]["server"]){
-                let lastwaggle = targets[j]["weakenwaggle"];
-                targets[j]["weakenwaggle"] = (thiswaggle + lastwaggle) / 2;
-              }
-            }
+            maxweaken = maxhack/2;
           }
         }
         for (let i = 0; i < finished.length; ++i){
@@ -185,10 +167,4 @@ export async function main(ns) {
     }
     await ns.sleep(10);
   }
-}
-
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
