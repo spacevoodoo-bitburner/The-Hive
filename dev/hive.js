@@ -55,8 +55,6 @@ export async function main(ns) {
     //if there is enough room for more workers, the hive is allowed to make more workers.  Otherwise wait.
     if (usedram < ns.getServerMaxRam(host) - scriptram * servers.length * 16){
     //generate a random number and check against probs to see which hack function will be performed
-      let curtime = Date.now();
-      let elapsedtime = curtime - starttime;
       let rand = Math.random();
       let prob1 = probs[0]["probability"];
       let prob2 = probs[0]["probability"] + probs[1]["probability"];
@@ -131,11 +129,7 @@ export async function main(ns) {
               }
             }
           }
-        } else {
-          if (port % 100 == 0){
-            maxhack = maxhack/2;
-          }
-        }
+        } 
       }
       //remove used ports from array after loop to avoid index errors
       for (let i = 0; i < finished.length; ++i){
@@ -157,10 +151,6 @@ export async function main(ns) {
                 maxgrow = (thiswaggle + lastwaggle) / 2;
               }
             }
-          }
-        } else {
-          if (port % 100 == 0){
-            maxgrow = maxgrow/2;
           }
         }
       }
@@ -184,15 +174,19 @@ export async function main(ns) {
               }
             }
           }
-        } else {
-          if (port % 100 == 0){
-            maxweaken = maxweaken/2;
-          }
         }
       }
       for (let i = 0; i < finished.length; ++i){
         weakenports.splice(finished[i], 1);
       }
+    }
+    let curtime = Date.now();
+    let elapsedtime = curtime - starttime;
+    if (elapsedtime > 50){
+      maxweaken = maxweaken/2;
+      maxhack = maxhack/2;
+      maxgrow = maxgrow/2;
+      starttime = curtime;
     }
     await ns.sleep(10);
   }
