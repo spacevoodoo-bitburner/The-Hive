@@ -127,7 +127,7 @@ export async function main(ns) {
               targets[j]["hackwaggle"] = (thiswaggle + lastwaggle) / 2;
               finished.push(i);
               if (thiswaggle > maxhack){
-                maxhack = thiswaggle;
+                maxhack = (thiswaggle + lastwaggle) / 2;
               }
             }
           }
@@ -154,7 +154,7 @@ export async function main(ns) {
               targets[j]["growwaggle"] = (thiswaggle + lastwaggle) / 2;
               finished.push(i)
               if (thiswaggle > maxgrow){
-                maxgrow = thiswaggle;
+                maxgrow = (thiswaggle + lastwaggle) / 2;
               }
             }
           }
@@ -180,7 +180,7 @@ export async function main(ns) {
               targets[j]["weakenwaggle"] = (thiswaggle + lastwaggle) / 2;
               finished.push(i);
               if (thiswaggle > maxweaken){
-                maxweaken = thiswaggle;
+                maxweaken = (thiswaggle + lastwaggle) / 2;
               }
             }
           }
