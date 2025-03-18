@@ -58,7 +58,7 @@ export async function main(ns) {
       let curtime = Date.now();
       let elapsedtime = curtime - starttime;
       if (usedram < ns.getServerMaxRam(host)/3 && elapsedtime > 10000){
-        ns.exec("restarthive.js", host);
+        ns.exec("/dev/restarthive.js", host);
       }
       let rand = Math.random();
       let prob1 = probs[0]["probability"];
@@ -135,7 +135,7 @@ export async function main(ns) {
             }
           }
         } else {
-          if (port % 500 == 0){
+          if (port % 100 == 0){
             maxhack = maxhack/2;
           }
         }
@@ -162,7 +162,7 @@ export async function main(ns) {
             }
           }
         } else {
-          if (port % 500 == 0){
+          if (port % 100 == 0){
             maxgrow = maxgrow/2;
           }
         }
@@ -188,7 +188,7 @@ export async function main(ns) {
             }
           }
         } else {
-          if (port % 500 == 0){
+          if (port % 100 == 0){
             maxweaken = maxweaken/2;
           }
         }
