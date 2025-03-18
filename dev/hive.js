@@ -182,7 +182,7 @@ export async function main(ns) {
     }
     let curtime = Date.now();
     let elapsedtime = curtime - starttime;
-    if (elapsedtime > 50){
+    if (elapsedtime > 500){
       maxweaken = maxweaken/2;
       maxhack = maxhack/2;
       maxgrow = maxgrow/2;
