@@ -1,3 +1,7 @@
 This is early game hacking code for the coding game Bitburner.  It will get updated as I play more of the game, clean it up, add new tasks, etc.  It uses a beehive algorithm to prioritize
 hacking targets and uses differential evolution (sort of) to manage the probabilities that particular hacking tasks will be performed.  Swarm.js manages all the hives.  Hive.js manages queens
 and workers in a particular hive.  Queen.js controls what ratios of workers are created for particular tasks.  Worker.js does things to targets and then tells the hive how juicy the target was.
+
+App is now in a functional state.  It was making good money before but now it will fully utilize server resources and hammer the best things until it runs out and any port in a storm when there are no high waggles coming in.  The swarm may need to be restarted a couple of times initially.  It doesn't seem to kick off right if the game autosaves while it is running.  Adding my killall script now.  However all breaking bugs seem to be worked out.
+
+One thing to to keep in mind if anyone draws from this code.  This is optimized around 32 TB servers.  I really wouldn't use it with less than 512 GB on home and then I would tweak the execs in hive.js to use 1 thread rather than 8.  Use a basic hacking script if you don't have enough ram to support a decentish population and don't kick something like this off until you do.  It's basically useless if you only have 2 bees and the more bees (and hives) you have the better it works.
