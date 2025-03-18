@@ -53,7 +53,7 @@ export async function main(ns) {
       probs = JSON.parse(probstring);
     }
     //if there is enough room for more workers, the hive is allowed to make more workers.  Otherwise wait.
-    if (usedram < ns.getServerMaxRam(host)){
+    if (usedram < ns.getServerMaxRam(host) - scriptram * servers.length * 2){
     //generate a random number and check against probs to see which hack function will be performed
       let curtime = Date.now();
       let elapsedtime = curtime - starttime;
