@@ -53,7 +53,7 @@ export async function main(ns) {
       probs = JSON.parse(probstring);
     }
     //if there is enough room for more workers, the hive is allowed to make more workers.  Otherwise wait.
-    if (usedram < ns.getServerMaxRam(host) - scriptram * servers.length * 2){
+    if (usedram < ns.getServerMaxRam(host) - scriptram * servers.length * 16){
     //generate a random number and check against probs to see which hack function will be performed
       let curtime = Date.now();
       let elapsedtime = curtime - starttime;
@@ -77,7 +77,7 @@ export async function main(ns) {
             obj["server"] = targets[i]["name"];
             obj["port"] = port;
             hackports.push(obj);
-            ns.exec("/dev/worker.js", host, 8, "hack", targets[i]["name"], port);
+            ns.exec("/dev/worker.js", host, 16, "hack", targets[i]["name"], port);
             port += 1;
             usedram += scriptram;
           }
@@ -94,7 +94,7 @@ export async function main(ns) {
             obj["server"] = targets[i]["name"];
             obj["port"] = port;
             growports.push(obj);
-            ns.exec("/dev/worker.js", host, 8, "grow", targets[i]["name"], port);
+            ns.exec("/dev/worker.js", host, 16, "grow", targets[i]["name"], port);
             port += 1;
           }
         }
@@ -109,7 +109,7 @@ export async function main(ns) {
             obj["server"] = targets[i]["name"];
             obj["port"] = port;
             weakenports.push(obj);
-            ns.exec("/dev/worker.js", host, 8, "weaken", targets[i]["name"], port);
+            ns.exec("/dev/worker.js", host, 16, "weaken", targets[i]["name"], port);
             port += 1;
           }
         }
