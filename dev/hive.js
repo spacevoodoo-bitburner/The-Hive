@@ -57,9 +57,6 @@ export async function main(ns) {
     //generate a random number and check against probs to see which hack function will be performed
       let curtime = Date.now();
       let elapsedtime = curtime - starttime;
-      if (usedram < ns.getServerMaxRam(host)/3 && elapsedtime > 10000){
-        ns.exec("/dev/restarthive.js", host);
-      }
       let rand = Math.random();
       let prob1 = probs[0]["probability"];
       let prob2 = probs[0]["probability"] + probs[1]["probability"];
