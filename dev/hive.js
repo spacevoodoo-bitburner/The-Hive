@@ -35,6 +35,19 @@ export async function main(ns) {
   let growports = [];
   let weakenports = [];
   while (true){
+    let curtime = Date.now();
+    let elapsedtime = curtime - starttime;
+    starttime = curtime;
+    if (elapsedtime > 1000){
+      for (let i = 0; i < targets.length; i++){
+        let hackwaggle = targets[i]["hackwaggle"];
+        let growwaggle = targets[i]["growwaggle"];
+        let weakenwaggle = targets[i]["weakenwaggle"]
+        targets[i]["hackwaggle"] = hackwaggle / 2;
+        targets[i]["growwaggle"] = growwaggle / 2;
+        targets[i]["weakenwaggle"] = weakenwaggle / 2;
+      }
+    }
     await ns.sleep(10);
     //every loop check port 1000 for a new queen.  If one is found update probs.
     usedram = ns.getServerUsedRam(host)
