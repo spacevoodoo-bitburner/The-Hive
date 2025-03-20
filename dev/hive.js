@@ -13,6 +13,7 @@ export async function main(ns) {
   let probs = JSON.parse(probstring);
   //get hives and targets
   let servers = await scanall(ns);
+  ns.tprint(servers);
   let purchasedservers = [];
   let targets = [];
   const host = ns.getHostname();
@@ -33,10 +34,8 @@ export async function main(ns) {
   let hackports = [];
   let growports = [];
   let weakenports = [];
-  let maxhack = 1;
-  let maxgrow = 1;
-  let maxweaken = 1;
   while (true){
+    await ns.sleep(10);
     //every loop check port 1000 for a new queen.  If one is found update probs.
     usedram = ns.getServerUsedRam(host)
     probstring = ns.readPort(1000);
@@ -53,61 +52,58 @@ export async function main(ns) {
       probs = JSON.parse(probstring);
     }
     //if there is enough room for more workers, the hive is allowed to make more workers.  Otherwise wait.
-    if (usedram < ns.getServerMaxRam(host) - scriptram * servers.length * 16){
+    if (usedram < ns.getServerMaxRam(host) - scriptram){ //* targets.length * 1){
     //generate a random number and check against probs to see which hack function will be performed
       let rand = Math.random();
       let prob1 = probs[0]["probability"];
       let prob2 = probs[0]["probability"] + probs[1]["probability"];
-      ns.print("Max Hack: " + maxhack.toString());
-      ns.print("Max Grow: " + maxgrow.toString());
-      ns.print("Max Weaken: " + maxweaken.toString());
       if (rand <= prob1){
         //if it's hack, generate a random number, loop through all servers and
         //execute hack if it's hackwaggle is greater than that number.
         //it will be the same if probs tells us to grow or weaken, but for their waggles
-        let servercheck = Math.random() * maxhack;
+        let servercheck = Math.random();
         for (let i = 0; i < targets.length; ++i){
-          if (targets[i]["hackwaggle"] <= 0 || typeof targets[i]["hackwaggle"] === 'undefined'){
-            targets[i]["hackwaggle"] = 1;
+          if (targets[i]["hackwaggle"] <= 0.00001 || typeof targets[i]["hackwaggle"] === 'undefined'){
+            targets[i]["hackwaggle"] = 0.1;
           }
           if (targets[i]["hackwaggle"] >= servercheck){
             let obj = {};
             obj["server"] = targets[i]["name"];
             obj["port"] = port;
             hackports.push(obj);
-            ns.exec("/dev/worker.js", host, 16, "hack", targets[i]["name"], port);
+            ns.exec("/dev/worker.js", host, 1, "hack", targets[i]["name"], port);
             port += 1;
             usedram += scriptram;
           }
         }
       } else if (rand > prob1 && rand <= prob2){
         
-        let servercheck = Math.random() * maxgrow;
+        let servercheck = Math.random();
         for (let i = 0; i < targets.length; ++i){
-          if (targets[i]["growwaggle"] <= 0 || typeof targets[i]["growwaggle"] === 'undefined'){
-            targets[i]["growwaggle"] = 1;
+          if (targets[i]["growwaggle"] <= 0.00001 || typeof targets[i]["growwaggle"] === 'undefined'){
+            targets[i]["growwaggle"] = 0.1;
           }
           if (targets[i]["growwaggle"] >= servercheck){
             let obj = {};
             obj["server"] = targets[i]["name"];
             obj["port"] = port;
             growports.push(obj);
-            ns.exec("/dev/worker.js", host, 16, "grow", targets[i]["name"], port);
+            ns.exec("/dev/worker.js", host, 1, "grow", targets[i]["name"], port);
             port += 1;
           }
         }
       } else {
-        let servercheck = Math.random() * maxweaken;
+        let servercheck = Math.random();
         for (let i = 0; i < targets.length; ++i){
-          if (targets[i]["weakenwaggle"] <= 0 || targets[i]["weakenwaggle"] === 'undefined'){
-            targets[i]["weakenwaggle"] = 1;
+          if (targets[i]["weakenwaggle"] <= 0.00001 || targets[i]["weakenwaggle"] === 'undefined'){
+            targets[i]["weakenwaggle"] = 0.1;
           }
           if (targets[i]["weakenwaggle"] >= servercheck){
             let obj = {};
             obj["server"] = targets[i]["name"];
             obj["port"] = port;
             weakenports.push(obj);
-            ns.exec("/dev/worker.js", host, 16, "weaken", targets[i]["name"], port);
+            ns.exec("/dev/worker.js", host, 1, "weaken", targets[i]["name"], port);
             port += 1;
           }
         }
@@ -117,16 +113,13 @@ export async function main(ns) {
     if (hackports.length > 0){
       let finished = [];
       for (let i = 0; i < hackports.length; ++i){
-        let thiswaggle = ns.readPort(hackports[i]["port"]);
+        let thiswaggle = 1 / (1 + Math.exp(-ns.readPort(hackports[i]["port"])));
         if (thiswaggle != "NULL PORT DATA"){
           for (let j = 0; j < targets.length; ++j){
             if (targets[j]["name"] == hackports[i]["server"]){
-              let lastwaggle = targets[j]["hackwaggle"];
+              let lastwaggle = 1 / (1 + Math.exp(-targets[j]["hackwaggle"]));
               targets[j]["hackwaggle"] = (thiswaggle + lastwaggle) / 2;
               finished.push(i);
-              if (thiswaggle > maxhack){
-                maxhack = (thiswaggle + lastwaggle) / 2;
-              }
             }
           }
         } 
@@ -140,16 +133,13 @@ export async function main(ns) {
     if (growports.length > 0){
       let finished = [];
       for (let i = 0; i < growports.length; ++i){
-        let thiswaggle = ns.readPort(growports[i]["port"]);
+        let thiswaggle = 1 / (1 + Math.exp(-ns.readPort(growports[i]["port"])));
         if (thiswaggle != "NULL PORT DATA"){
           for (let j = 0; j < targets.length; ++j){
             if (targets[j]["name"] == growports[i]["server"]){
-              let lastwaggle = targets[j]["growwaggle"];
+              let lastwaggle = 1 / (1 + Math.exp(-targets[j]["growwaggle"]));
               targets[j]["growwaggle"] = (thiswaggle + lastwaggle) / 2;
               finished.push(i)
-              if (thiswaggle > maxgrow){
-                maxgrow = (thiswaggle + lastwaggle) / 2;
-              }
             }
           }
         }
@@ -162,16 +152,13 @@ export async function main(ns) {
     if (weakenports.length > 0){
       let finished = [];
       for (let i = 0; i < weakenports.length; ++i){
-        let thiswaggle = ns.readPort(weakenports[i]["port"]);
+        let thiswaggle = 1 / (1 + Math.exp(-ns.readPort(weakenports[i]["port"])));
         if (thiswaggle != "NULL PORT DATA"){
           for (let j = 0; j < targets.length; ++j){
             if (targets[j]["name"] == weakenports[i]["server"]){
-              let lastwaggle = targets[j]["weakenwaggle"];
+              let lastwaggle = 1 / (1 + Math.exp(-targets[j]["weakenwaggle"]));
               targets[j]["weakenwaggle"] = (thiswaggle + lastwaggle) / 2;
               finished.push(i);
-              if (thiswaggle > maxweaken){
-                maxweaken = (thiswaggle + lastwaggle) / 2;
-              }
             }
           }
         }
@@ -180,15 +167,6 @@ export async function main(ns) {
         weakenports.splice(finished[i], 1);
       }
     }
-    let curtime = Date.now();
-    let elapsedtime = curtime - starttime;
-    if (elapsedtime > 500){
-      maxweaken = maxweaken/2;
-      maxhack = maxhack/2;
-      maxgrow = maxgrow/2;
-      starttime = curtime;
-    }
-    await ns.sleep(10);
   }
 }
 
