@@ -2,6 +2,7 @@ import { scanall } from "/dev/scanner.js";
 import { queenbee } from "/dev/queen.js";
 
 export async function main(ns) {
+  ns.exec("purchaseserver.js", "home", 1, ns.args[0]);
   let starttime = Date.now();
   //get all target servers. These will be hives too but mostly function as flowers.
   const servers = await scanall(ns);
@@ -28,7 +29,7 @@ export async function main(ns) {
       ns.scp("/dev/queen.js", servers[i]["name"]);
       ns.scp("/dev/restarthive.js", servers[i]["name"]);
       ns.exec("/dev/queen.js", servers[i]["name"], 1, 1000, x, y, z);
-      ns.exec("/dev/hive.js", servers[i]["name"]);
+      ns.exec("/dev/hive.js", servers[i]["name"], 1, ns.args[1], ns.args[2], ns.args[3]);
     }
   }
   //same as for servers
@@ -43,9 +44,9 @@ export async function main(ns) {
     ns.scp("/dev/worker.js", purchasedservers[i]);
     ns.scp("/dev/scanner.js", purchasedservers[i]);
     ns.scp("/dev/queen.js", purchasedservers[i]);
-    ns.scp("/dev/restarthive.js", servers[i]["name"]);
+    ns.scp("/dev/restarthive.js", purchasedservers[i]);
     ns.exec("/dev/queen.js", purchasedservers[i], 1, 1000, x, y, z);
-    ns.exec("/dev/hive.js", purchasedservers[i]);
+    ns.exec("/dev/hive.js", purchasedservers[i], 1, ns.args[1], ns.args[2], ns.args[3]);
   }
   if (!ns.fileExists("SQLInject.exe", "home")) {
     let queen = queenbee(ns);
@@ -55,7 +56,7 @@ export async function main(ns) {
     let z = queen[2]["variable"];
     queenmatrix.push(queen);
     ns.exec("/dev/queen.js", "home", 1, 1000, x, y, z);
-    ns.exec("/dev/hive.js", "home");
+    ns.exec("/dev/hive.js", "home", 1, ns.args[1], ns.args[2], ns.args[3]);
   }
   let bestqueens = [];
   //sleep until enough workers have had a chance to execute to get a 
@@ -66,7 +67,7 @@ export async function main(ns) {
     let serverarray = [];
     //for every hive, grab it's script income and save it to an array
     for (let i = 0; i < servers.length; ++i){
-      if (ns.getServerMaxRam(servers[i]["name"]) > 8){
+      if (ns.getServerMaxRam(servers[i]["name"]) >= 8){
         let curtime = Date.now();
         let diff = curtime - starttime;
         let success = ns.getScriptIncome("/dev/hive.js", servers[i]["name"])/diff;
