@@ -11,7 +11,7 @@ export function queenbee(ns){
   let x = 0;
   let y = 0;
   let z = 0;
-  if (typeof ns.args[1] !== 'undefined'){
+  if (typeof ns.args[1] !== 'undefined' && ns.args[1] < 1){
     x = ns.args[1];
     y = ns.args[2];
     z = ns.args[3];
