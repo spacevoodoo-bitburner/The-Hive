@@ -12,7 +12,7 @@ export async function main(ns) {
       ns.scp("/dev/restarthive.js", "pserv-" + i);
       ns.exec("/dev/queen.js", "pserv-" + i, 1, 1000);
       await ns.sleep(100);
-      ns.exec("/dev/hive.js", "pserv-" + i);
+      ns.exec("/dev/hive.js", "pserv-" + i, 1, 2, 1000);
       ++i;
     }
     await ns.sleep(1000);
