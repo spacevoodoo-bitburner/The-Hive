@@ -1,4 +1,6 @@
-*****************KILLING THIS REPO****************
+***************************************************
+**KILLING THIS REPO**
+
 This repo is dead.  The code in it probably worksish...maybe.  Not sure.  At a certain point in the game there are enough files floating around in enough places that it's untenable to just copy files out of the nano editor and come in here and put them in by hand.  All code is now being written in vscode and pushed to the game.  I've created a new bitburner repo where I can do sensible one click commits.  The hive is in there, as are other folders that do other things in bitburner.  It's the whole shebang, the same stuff I'll be pushing to the game.
 ***************************************************
 
